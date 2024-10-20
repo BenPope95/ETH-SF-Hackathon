@@ -467,6 +467,470 @@ namespace __proto {
     }
   }
 }
+export namespace google {
+  export namespace protobuf {
+    /**
+     * `NullValue` is a singleton enumeration to represent the null value for the
+     *  `Value` type union.
+     *
+     *  The JSON representation for `NullValue` is JSON `null`.
+     */
+    export enum NullValue {
+      // Null value.
+      NULL_VALUE = 0,
+    } // NullValue
+    /**
+     * `Value` represents a dynamically typed value which can be either
+     *  null, a number, a string, a boolean, a recursive struct value, or a
+     *  list of values. A producer of value is expected to set one of these
+     *  variants. Absence of any variant indicates an error.
+     *
+     *  The JSON representation for `Value` is JSON value.
+     */
+    export class Value {
+      // Represents a null value.
+      public null_value: u32;
+      // Represents a double value.
+      public number_value: f64;
+      // Represents a string value.
+      public string_value: string = "";
+      // Represents a boolean value.
+      public bool_value: bool;
+      // Represents a structured value.
+      public struct_value: Struct | null;
+      // Represents a repeated `Value`.
+      public list_value: ListValue | null;
+
+      public __kind: string = "";
+      public __kind_index: u8 = 0;
+
+      static readonly KIND_NULL_VALUE_INDEX: u8 = 1;
+      static readonly KIND_NUMBER_VALUE_INDEX: u8 = 2;
+      static readonly KIND_STRING_VALUE_INDEX: u8 = 3;
+      static readonly KIND_BOOL_VALUE_INDEX: u8 = 4;
+      static readonly KIND_STRUCT_VALUE_INDEX: u8 = 5;
+      static readonly KIND_LIST_VALUE_INDEX: u8 = 6;
+
+      // Decodes Value from an ArrayBuffer
+      static decode(buf: ArrayBuffer): Value {
+        return Value.decodeDataView(new DataView(buf));
+      }
+
+      // Decodes Value from a DataView
+      static decodeDataView(view: DataView): Value {
+        const decoder = new __proto.Decoder(view);
+        const obj = new Value();
+
+        while (!decoder.eof()) {
+          const tag = decoder.tag();
+          const number = tag >>> 3;
+
+          switch (number) {
+            case 1: {
+              obj.null_value = decoder.uint32();
+              obj.__kind = "null_value";
+              obj.__kind_index = 1;
+              break;
+            }
+            case 2: {
+              obj.number_value = decoder.double();
+              obj.__kind = "number_value";
+              obj.__kind_index = 2;
+              break;
+            }
+            case 3: {
+              obj.string_value = decoder.string();
+              obj.__kind = "string_value";
+              obj.__kind_index = 3;
+              break;
+            }
+            case 4: {
+              obj.bool_value = decoder.bool();
+              obj.__kind = "bool_value";
+              obj.__kind_index = 4;
+              break;
+            }
+            case 5: {
+              const length = decoder.uint32();
+              obj.struct_value = Struct.decodeDataView(
+                new DataView(
+                  decoder.view.buffer,
+                  decoder.pos + decoder.view.byteOffset,
+                  length
+                )
+              );
+              decoder.skip(length);
+
+              obj.__kind = "struct_value";
+              obj.__kind_index = 5;
+              break;
+            }
+            case 6: {
+              const length = decoder.uint32();
+              obj.list_value = ListValue.decodeDataView(
+                new DataView(
+                  decoder.view.buffer,
+                  decoder.pos + decoder.view.byteOffset,
+                  length
+                )
+              );
+              decoder.skip(length);
+
+              obj.__kind = "list_value";
+              obj.__kind_index = 6;
+              break;
+            }
+
+            default:
+              decoder.skipType(tag & 7);
+              break;
+          }
+        }
+        return obj;
+      } // decode Value
+
+      public size(): u32 {
+        let size: u32 = 0;
+
+        size +=
+          this.null_value == 0 ? 0 : 1 + __proto.Sizer.uint32(this.null_value);
+        size += this.number_value == 0 ? 0 : 1 + 8;
+        size +=
+          this.string_value.length > 0
+            ? 1 +
+              __proto.Sizer.varint64(this.string_value.length) +
+              this.string_value.length
+            : 0;
+        size += this.bool_value == 0 ? 0 : 1 + 1;
+
+        if (this.struct_value != null) {
+          const f: Struct = this.struct_value as Struct;
+          const messageSize = f.size();
+
+          if (messageSize > 0) {
+            size += 1 + __proto.Sizer.varint64(messageSize) + messageSize;
+          }
+        }
+
+        if (this.list_value != null) {
+          const f: ListValue = this.list_value as ListValue;
+          const messageSize = f.size();
+
+          if (messageSize > 0) {
+            size += 1 + __proto.Sizer.varint64(messageSize) + messageSize;
+          }
+        }
+
+        return size;
+      }
+
+      // Encodes Value to the ArrayBuffer
+      encode(): ArrayBuffer {
+        return changetype<ArrayBuffer>(
+          StaticArray.fromArray<u8>(this.encodeU8Array())
+        );
+      }
+
+      // Encodes Value to the Array<u8>
+      encodeU8Array(
+        encoder: __proto.Encoder = new __proto.Encoder(new Array<u8>())
+      ): Array<u8> {
+        const buf = encoder.buf;
+
+        if (this.null_value != 0) {
+          encoder.uint32(0x8);
+          encoder.uint32(this.null_value);
+        }
+        if (this.number_value != 0) {
+          encoder.uint32(0x11);
+          encoder.double(this.number_value);
+        }
+        if (this.string_value.length > 0) {
+          encoder.uint32(0x1a);
+          encoder.uint32(this.string_value.length);
+          encoder.string(this.string_value);
+        }
+        if (this.bool_value != 0) {
+          encoder.uint32(0x20);
+          encoder.bool(this.bool_value);
+        }
+
+        if (this.struct_value != null) {
+          const f = this.struct_value as Struct;
+
+          const messageSize = f.size();
+
+          if (messageSize > 0) {
+            encoder.uint32(0x2a);
+            encoder.uint32(messageSize);
+            f.encodeU8Array(encoder);
+          }
+        }
+
+        if (this.list_value != null) {
+          const f = this.list_value as ListValue;
+
+          const messageSize = f.size();
+
+          if (messageSize > 0) {
+            encoder.uint32(0x32);
+            encoder.uint32(messageSize);
+            f.encodeU8Array(encoder);
+          }
+        }
+
+        return buf;
+      } // encode Value
+
+      // Sets field value
+      set<T>(value: T): Value {
+        this.setNull();
+        this.null_value = 0;
+
+        if (isBoolean<T>(value)) {
+          this.bool_value = value;
+        } else if (isInteger<T>(value) || isFloat<T>(value)) {
+          this.number_value = value;
+        } else if (isString<T>(value)) {
+          this.string_value = value;
+        } else if (value instanceof Struct) {
+          this.struct_value = value;
+        } else if (value instanceof Value) {
+          this.null_value = value.null_value;
+          this.number_value = value.number_value;
+          this.string_value = value.string_value;
+          this.struct_value = value.struct_value;
+          this.list_value = value.list_value;
+        } else if (isArray(value)) {
+          const v = new ListValue();
+          for (let i: i32 = 0; i < value.length; i++) {
+            v.values.push(new Value().set(value[i]));
+          }
+          this.list_value = v;
+        }
+
+        return this;
+      }
+
+      // Sets field value to null
+      setNull(): void {
+        this.null_value = 1;
+        this.bool_value = false;
+        this.string_value = "";
+        this.struct_value = null;
+        this.list_value = null;
+      }
+    } // Value
+
+    /**
+     * `Struct` represents a structured data value, consisting of fields
+     *  which map to dynamically typed values. In some languages, `Struct`
+     *  might be supported by a native representation. For example, in
+     *  scripting languages like JS a struct is represented as an
+     *  object. The details of that representation are described together
+     *  with the proto support for the language.
+     *
+     *  The JSON representation for `Struct` is JSON object.
+     */
+    export class Struct {
+      // Unordered map of dynamically typed values.
+      public fields: Map<string, Value> = new Map<string, Value>();
+
+      // Decodes Struct from an ArrayBuffer
+      static decode(buf: ArrayBuffer): Struct {
+        return Struct.decodeDataView(new DataView(buf));
+      }
+
+      // Decodes Struct from a DataView
+      static decodeDataView(view: DataView): Struct {
+        const decoder = new __proto.Decoder(view);
+        const obj = new Struct();
+
+        while (!decoder.eof()) {
+          const tag = decoder.tag();
+          const number = tag >>> 3;
+
+          switch (number) {
+            case 1: {
+              const length = decoder.uint32();
+              __decodeMap_string_Value(decoder, length, obj.fields);
+              decoder.skip(length);
+
+              break;
+            }
+
+            default:
+              decoder.skipType(tag & 7);
+              break;
+          }
+        }
+        return obj;
+      } // decode Struct
+
+      public size(): u32 {
+        let size: u32 = 0;
+
+        if (this.fields.size > 0) {
+          const keys = this.fields.keys();
+
+          for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            const value = this.fields.get(key);
+            const itemSize = __sizeMapEntry_string_Value(key, value);
+            if (itemSize > 0) {
+              size += 1 + __proto.Sizer.varint64(itemSize) + itemSize;
+            }
+          }
+        }
+
+        return size;
+      }
+
+      // Encodes Struct to the ArrayBuffer
+      encode(): ArrayBuffer {
+        return changetype<ArrayBuffer>(
+          StaticArray.fromArray<u8>(this.encodeU8Array())
+        );
+      }
+
+      // Encodes Struct to the Array<u8>
+      encodeU8Array(
+        encoder: __proto.Encoder = new __proto.Encoder(new Array<u8>())
+      ): Array<u8> {
+        const buf = encoder.buf;
+
+        if (this.fields.size > 0) {
+          const keys = this.fields.keys();
+          for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            const value = this.fields.get(key);
+            const size = __sizeMapEntry_string_Value(key, value);
+            if (size > 0) {
+              encoder.uint32(0xa);
+              encoder.uint32(size);
+              if (key.length > 0) {
+                encoder.uint32(0xa);
+                encoder.uint32(key.length);
+                encoder.string(key);
+              }
+
+              const messageSize = value.size();
+
+              if (messageSize > 0) {
+                encoder.uint32(0x12);
+                encoder.uint32(messageSize);
+                value.encodeU8Array(encoder);
+              }
+            }
+          }
+        }
+
+        return buf;
+      } // encode Struct
+
+      // Returns struct field by name. If field does not exists, it gets created and added to the fields collection.
+      get(name: string): Value {
+        if (this.fields.has(name)) {
+          return this.fields.get(name);
+        }
+
+        const v = new Value();
+        v.setNull();
+        this.fields.set(name, v);
+        return v;
+      }
+    } // Struct
+
+    /**
+     * `ListValue` is a wrapper around a repeated field of values.
+     *
+     *  The JSON representation for `ListValue` is JSON array.
+     */
+    export class ListValue {
+      // Repeated field of dynamically typed values.
+      public values: Array<Value> = new Array<Value>();
+
+      // Decodes ListValue from an ArrayBuffer
+      static decode(buf: ArrayBuffer): ListValue {
+        return ListValue.decodeDataView(new DataView(buf));
+      }
+
+      // Decodes ListValue from a DataView
+      static decodeDataView(view: DataView): ListValue {
+        const decoder = new __proto.Decoder(view);
+        const obj = new ListValue();
+
+        while (!decoder.eof()) {
+          const tag = decoder.tag();
+          const number = tag >>> 3;
+
+          switch (number) {
+            case 1: {
+              const length = decoder.uint32();
+              obj.values.push(
+                Value.decodeDataView(
+                  new DataView(
+                    decoder.view.buffer,
+                    decoder.pos + decoder.view.byteOffset,
+                    length
+                  )
+                )
+              );
+              decoder.skip(length);
+
+              break;
+            }
+
+            default:
+              decoder.skipType(tag & 7);
+              break;
+          }
+        }
+        return obj;
+      } // decode ListValue
+
+      public size(): u32 {
+        let size: u32 = 0;
+
+        for (let n: i32 = 0; n < this.values.length; n++) {
+          const messageSize = this.values[n].size();
+
+          if (messageSize > 0) {
+            size += 1 + __proto.Sizer.varint64(messageSize) + messageSize;
+          }
+        }
+
+        return size;
+      }
+
+      // Encodes ListValue to the ArrayBuffer
+      encode(): ArrayBuffer {
+        return changetype<ArrayBuffer>(
+          StaticArray.fromArray<u8>(this.encodeU8Array())
+        );
+      }
+
+      // Encodes ListValue to the Array<u8>
+      encodeU8Array(
+        encoder: __proto.Encoder = new __proto.Encoder(new Array<u8>())
+      ): Array<u8> {
+        const buf = encoder.buf;
+
+        for (let n: i32 = 0; n < this.values.length; n++) {
+          const messageSize = this.values[n].size();
+
+          if (messageSize > 0) {
+            encoder.uint32(0xa);
+            encoder.uint32(messageSize);
+            this.values[n].encodeU8Array(encoder);
+          }
+        }
+
+        return buf;
+      } // encode ListValue
+    } // ListValue
+  } // protobuf
+} // google
 export namespace contract {
   export namespace v1 {
     export class Mint {
@@ -636,3 +1100,67 @@ export namespace contract {
     } // Mints
   } // v1
 } // contract
+
+// __decodeMap_string_Value
+
+function __decodeMap_string_Value(
+  parentDecoder: __proto.Decoder,
+  length: i32,
+  map: Map<string, google.protobuf.Value>
+): void {
+  const decoder = new __proto.Decoder(
+    new DataView(
+      parentDecoder.view.buffer,
+      parentDecoder.pos + parentDecoder.view.byteOffset,
+      length
+    )
+  );
+
+  let key: string = "";
+  let value: google.protobuf.Value = new google.protobuf.Value();
+
+  while (!decoder.eof()) {
+    const tag = decoder.tag();
+    const number = tag >>> 3;
+
+    switch (number) {
+      case 1: {
+        key = decoder.string();
+        break;
+      }
+
+      case 2: {
+        const length = decoder.uint32();
+        value = google.protobuf.Value.decodeDataView(
+          new DataView(
+            decoder.view.buffer,
+            decoder.pos + decoder.view.byteOffset,
+            length
+          )
+        );
+        decoder.skip(length);
+
+        break;
+      }
+
+      default:
+        decoder.skipType(tag & 7);
+        break;
+    }
+  }
+  map.set(key as string, value as google.protobuf.Value);
+}
+
+// __sizeMapEntry_string_Value
+
+function __sizeMapEntry_string_Value(key: string, value: google.protobuf.Value): u32 {
+  const keySize =
+    key.length > 0 ? 1 + __proto.Sizer.varint64(key.length) + key.length : 0;
+  const valueSize = value.size();
+
+  if (valueSize == 0) {
+    return keySize;
+  }
+
+  return keySize + 1 + __proto.Sizer.varint64(valueSize) + valueSize;
+}

@@ -4,33 +4,47 @@ type Collection @entity {
   sellCount: BigInt
   buyOrders: [Order!] @derivedfrom(field: "buyCollection")
   sellOrders: [Order!] @derivedfrom(field: "sellCollection")
-  tokens: [Nft] @derivedFrom(field: "collection")
+  tokens: [Nft!] @derivedFrom(field: "collection")
+}
+
+type Order @entity {
+  id: ID!
+  buyCollection: Collection!
+  sellCollection: Collection!
 }
 
 type User @entity {
   id: ID!
-  tokens: [Nft!] @derivedFrom(field: "owner")
-  loans: [Loan] @derivedFrom(field: "owner")
-  failedLoans: [FailedLoan] @derivedFrom(field: "owner")
+  tokens: [Nft!]! @derivedFrom(field: "owner")
+  #loans: [Loan!]! @derivedFrom(field: "owner")
+  #failedLoans: [FailedLoan!]! @derivedFrom(field: "owner")
 }
 
 type Nft @entity {
   id: ID!
   owner: User
+  tokenId: BigInt!
   collection: Collection!
-  sells: [Trades] @derivedFrom(field: "sellAddress")
-  buys: [Trades] @derivedFrom(field: "buyAddress")
-  metadata: TokenMetadata @derivedFrom(field: "buyAddress")
-  loanVolume: LoanVolume @derivedFrom(field: "collection")
+  sells: [Trade!]! @derivedFrom(field: "sellAddress")
+  buys: [Trade!]! @derivedFrom(field: "buyAddress")
+  metadata: [TokenMetadata!]! @derivedFrom(field: "token")
+  loanVolume: [LoanVolume!]! @derivedFrom(field: "collection")
+}
+
+type Trade @entity {
+  id: ID!
+  sellAddress: Nft!
+  buyAddress: Nft!
 }
 
 type LoanVolume @entity {
   id: ID!
-  collection: Nft
+  collection: Nft!
   volumeInEth: BigInt
 }
 
 type TokenMetadata @entity {
+  id: ID!
   content: String
   description: String
   image: String

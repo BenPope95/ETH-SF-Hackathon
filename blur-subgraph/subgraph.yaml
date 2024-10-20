@@ -1,21 +1,20 @@
-specVersion: 0.0.5
-indexerHints:
-  prune: auto
+specVersion: 0.0.4
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: substreams
-    name: Contract
-    network: arbitrum-one
+    name: sps-triggers
+    network: mainnet
     source:
       package:
-        moduleName: graph_out
-        file: triggers-test-v0.1.0.spkg
+        moduleName: map_events
+        file: output.spkg
     mapping:
       apiVersion: 0.0.7
       kind: substreams/graph-entities
-      handler: handleToken
       file: ./src/mapping.ts
+      handler: handleEvents
+      
 templates:
   - kind: file/ipfs
     name: TokenMeta

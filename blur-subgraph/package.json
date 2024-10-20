@@ -7,13 +7,15 @@
     "create-local": "graph create --node http://localhost:8020/ triggers_subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ triggers_subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 triggers_subgraph",
-    "test": "graph test"
+    "test": "graph test",
+    "codegen": "graph codegen",
+    "protogen": "protoc --include_imports --plugin=./node_modules/protobuf-as/bin/protoc-gen-as --as_out=src/pb/ ./proto/*.proto"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.65.0",
     "@graphprotocol/graph-ts": "^0.35.1",
     "protobuf-as": "https://github.com/mangas/protobuf-as",
+    "protoc-gen-js": "^3.21.2",
     "tsx": "^4.16.2"
   }
 }
-
