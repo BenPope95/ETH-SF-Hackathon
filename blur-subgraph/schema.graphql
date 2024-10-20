@@ -1,5 +1,38 @@
-type ExampleEntity @entity {
+type Collection @entity {
   id: ID!
-  block: Bytes!
-  count: BigInt!
+  buyCount: BigInt
+  sellCount: BigInt
+  buyOrders: [Order!] @derivedfrom(field: "buyCollection")
+  sellOrders: [Order!] @derivedfrom(field: "sellCollection")
+  tokens: [Nft] @derivedFrom(field: "collection")
+}
+
+type User @entity {
+  id: ID!
+  tokens: [Nft!] @derivedFrom(field: "owner")
+  loans: [Loan] @derivedFrom(field: "owner")
+  failedLoans: [FailedLoan] @derivedFrom(field: "owner")
+}
+
+type Nft @entity {
+  id: ID!
+  owner: User
+  collection: Collection!
+  sells: [Trades] @derivedFrom(field: "sellAddress")
+  buys: [Trades] @derivedFrom(field: "buyAddress")
+  metadata: TokenMetadata @derivedFrom(field: "buyAddress")
+  loanVolume: LoanVolume @derivedFrom(field: "collection")
+}
+
+type LoanVolume @entity {
+  id: ID!
+  collection: Nft
+  volumeInEth: BigInt
+}
+
+type TokenMetadata @entity {
+  content: String
+  description: String
+  image: String
+  token: Nft!
 }

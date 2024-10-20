@@ -1,4 +1,4 @@
-specVersion: 1.0.0
+specVersion: 0.0.5
 indexerHints:
   prune: auto
 schema:
@@ -10,7 +10,22 @@ dataSources:
     source:
       package:
         moduleName: graph_out
-        file: /Users/ben/repos/sps-triggers/triggers_subgraph/triggers-test-v0.1.0.spkg
+        file: triggers-test-v0.1.0.spkg
     mapping:
-      apiVersion: 0.0.5
+      apiVersion: 0.0.7
       kind: substreams/graph-entities
+      handler: handleToken
+      file: ./src/mapping.ts
+templates:
+  - kind: file/ipfs
+    name: TokenMeta
+    mapping:
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      handler: handleTraits
+      file: ./src/mapping.ts
+      entities:
+        - Mutex
+      abis:
+        - name: Token
+          file: ./abis/Token.json

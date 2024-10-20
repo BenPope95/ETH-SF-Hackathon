@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package contract.v1;
+
+message Mint {
+    string token_id = 1;
+    string token_uri = 2;
+}
+
+message Mints {
+    repeated Mint mints = 1;
+}
